@@ -3,6 +3,9 @@ const cors = require('cors');
 const admin = require("firebase-admin");
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
+// payment
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
+// payment
 require('dotenv').config();
 
 const app = express();
@@ -44,14 +47,24 @@ async function run() {
         const appointmentCollection = database.collection('appointment');
         const usersCollection = database.collection('users');
 
+        // payment
+        app.post('/create-payment-intent', async (req, res) => {
+            const paymentInfo = req.body;
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: paymentInfo.price * 100,
+                payment_method_types: ['card']
+            });
+            res.json({clientSecret: paymentIntent.client_secret})
+        });
+        // payment
+
         app.get('/appointment', verifyToken, async (req, res) => {
             const email = req.query.email;
         const date = req.query.date;
             const query = { email: email, date: date };
-            // console.log(query);
             const appointments = appointmentCollection.find(query);
             const result = await appointments.toArray();
-            // console.log(result);
             res.json(result);
         });
 
