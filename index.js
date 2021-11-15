@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const admin = require("firebase-admin");
-const { MongoClient } = require('mongodb')
+const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config();
 
 const app = express();
@@ -45,7 +46,7 @@ async function run() {
 
         app.get('/appointment', verifyToken, async (req, res) => {
             const email = req.query.email;
-            const date = req.query.date;
+        const date = req.query.date;
             const query = { email: email, date: date };
             // console.log(query);
             const appointments = appointmentCollection.find(query);
@@ -53,6 +54,13 @@ async function run() {
             // console.log(result);
             res.json(result);
         });
+
+        app.get('/appointment/:appointmentId', async (req, res) => {
+            const appointmentId = req.params.appointmentId;
+            const query = {_id: ObjectId(appointmentId)};
+            const result = await appointmentCollection.findOne(query);
+            res.json(result);
+        })
 
         app.post('/appointment', async (req, res) => {
             const data = req.body;
