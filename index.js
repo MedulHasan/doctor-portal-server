@@ -4,7 +4,7 @@ const admin = require("firebase-admin");
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 // payment
-const stripe = require('stripe')(process.env.STRIPE_SECRET);
+const stripe = require('stripe')('sk_test_51JvuqtDIBQXTyseW7lEWVGtdyPfwofGJTVbLHf0dSEruPjvlCeKHyQ2jpRVcEoyPyU6eQJIQ3nJnIKh9igMKSe1v00WlDKbXqV')
 // payment
 require('dotenv').config();
 
