@@ -57,6 +57,20 @@ async function run() {
             });
             res.json({clientSecret: paymentIntent.client_secret})
         });
+
+        // appointment payment save to db
+        app.put('/appointment/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const query = {_id: ObjectId(id)}
+            const updateDoc = {
+                $set: {
+                    payment: payment
+                }
+            };
+            const result = await appointmentCollection.updateOne(query, updateDoc);
+            res.json(result);
+        })
         // payment
 
         app.get('/appointment', verifyToken, async (req, res) => {
