@@ -6,7 +6,7 @@ const ObjectId = require('mongodb').ObjectId;
 const fileUpload = require('express-fileupload');
 
 // payment
-const stripe = require('stripe')('sk_test_51JvuqtDIBQXTyseW7lEWVGtdyPfwofGJTVbLHf0dSEruPjvlCeKHyQ2jpRVcEoyPyU6eQJIQ3nJnIKh9igMKSe1v00WlDKbXqV')
+const stripe = require('stripe')(process.env.STRIPE_SECRET_API_KEY);
 // payment
 require('dotenv').config();
 
@@ -87,7 +87,7 @@ async function run() {
         });
 
         // appointment payment save to db
-        app.put('/]/:id', async (req, res) => {
+        app.put('/appointment/:id', async (req, res) => {
             const id = req.params.id;
             const payment = req.body;
             const query = {_id: ObjectId(id)}
