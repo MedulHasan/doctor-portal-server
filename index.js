@@ -6,7 +6,7 @@ const ObjectId = require('mongodb').ObjectId;
 const fileUpload = require('express-fileupload');
 
 // payment
-const stripe = require('stripe')(process.env.STRIPE_SECRET_API_KEY)
+const stripe = require('stripe')('sk_test_51JvuqtDIBQXTyseW7lEWVGtdyPfwofGJTVbLHf0dSEruPjvlCeKHyQ2jpRVcEoyPyU6eQJIQ3nJnIKh9igMKSe1v00WlDKbXqV')
 // payment
 require('dotenv').config();
 
