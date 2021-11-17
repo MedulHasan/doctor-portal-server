@@ -3,8 +3,10 @@ const cors = require('cors');
 const admin = require("firebase-admin");
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
+const fileUpload = require('express-fileupload');
+
 // payment
-const stripe = require('stripe')('sk_test_51JvuqtDIBQXTyseW7lEWVGtdyPfwofGJTVbLHf0dSEruPjvlCeKHyQ2jpRVcEoyPyU6eQJIQ3nJnIKh9igMKSe1v00WlDKbXqV')
+const stripe = require('stripe')(process.env.STRIPE_SECRET_API_KEY)
 // payment
 require('dotenv').config();
 
@@ -13,6 +15,7 @@ const port = process.env.PORT || 8888;
 
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
 
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -46,6 +49,31 @@ async function run() {
         const database = client.db('doctor_portal');
         const appointmentCollection = database.collection('appointment');
         const usersCollection = database.collection('users');
+        const doctorsCollection = database.collection('doctors');
+
+        //file upload 
+        app.post('/doctors', async (req, res) => {
+            const name = req.body.name;
+            const email = req.body.email;
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const doctor = {
+                name,
+                email,
+                image: imageBuffer
+            };
+            const result = await doctorsCollection.insertOne(doctor);
+            res.json(result);
+        });
+
+        app.get('/doctors', async (req, res) => {
+            const cursor = doctorsCollection.find({});
+            const result = await cursor.toArray();
+            res.json(result);
+        })
+        // 
 
         // payment
         app.post('/create-payment-intent', async (req, res) => {
@@ -59,7 +87,7 @@ async function run() {
         });
 
         // appointment payment save to db
-        app.put('/appointment/:id', async (req, res) => {
+        app.put('/]/:id', async (req, res) => {
             const id = req.params.id;
             const payment = req.body;
             const query = {_id: ObjectId(id)}
